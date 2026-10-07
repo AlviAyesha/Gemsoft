@@ -54,7 +54,7 @@ export default function run() {
     const b=$('.c-submit',cForm);b.disabled=true;b.classList.add('busy');
     const fail=t=>{b.disabled=false;b.classList.remove('busy');const e=$('.c-form-err',cForm);e.textContent=t;e.hidden=false};
     $('.c-form-err',cForm).hidden=true;
-    fetch('/api/inquiry',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...Object.fromEntries(new FormData(cForm)),page:location.pathname})})
+    fetch('/next/inquiry',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...Object.fromEntries(new FormData(cForm)),page:location.pathname})})
       .then(r=>r.json().catch(()=>({})).then(j=>{if(!r.ok)throw new Error(j.error||'')}))
       .then(()=>{
       $('#cDoneName').textContent=$('[name=name]',cForm).value.trim().split(/\s+/)[0];

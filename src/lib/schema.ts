@@ -30,7 +30,7 @@ export const website = () => ({
   url: SITE_URL,
   name: SITE_NAME,
   publisher: { '@id': ORG_ID },
-  potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/insights?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
+  potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/insights/search?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
 })
 
 export const breadcrumbs = (items: { name: string; path: string }[]) => ({

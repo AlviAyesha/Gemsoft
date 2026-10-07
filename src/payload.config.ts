@@ -66,7 +66,8 @@ export default buildConfig({
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
-  db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URL || '' } }),
+  // dev pushes schema changes automatically; production runs the files in src/migrations (npm run migrate)
+  db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URL || '' }, migrationDir: path.resolve(dirname, 'migrations') }),
   email,
   sharp,
   plugins: [

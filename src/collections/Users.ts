@@ -5,7 +5,7 @@ export const Users: CollectionConfig = {
   slug: 'users',
   admin: { useAsTitle: 'name', defaultColumns: ['name', 'email', 'role'], group: 'Team' },
   auth: true,
-  access: { read: authenticated, create: adminsOnly, update: ({ req: { user }, id }) => user?.role === 'admin' || user?.id === id, delete: adminsOnly, admin: authenticated },
+  access: { read: authenticated, create: adminsOnly, update: ({ req: { user }, id }) => user?.role === 'admin' || user?.id === id, delete: adminsOnly, admin: ({ req: { user } }) => Boolean(user) },
   fields: [
     { name: 'name', type: 'text', required: true },
     {

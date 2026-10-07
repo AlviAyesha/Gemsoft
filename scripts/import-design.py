@@ -55,7 +55,7 @@ open(os.path.join(OUT, 'shell.css'), 'w').write(fix_paths(shell_css))
 
 
 def live_contact(markup, js, css):
-    """The design's contact form only pretends to send; on the live site it posts to /api/inquiry."""
+    """The design's contact form only pretends to send; on the live site it posts to /next/inquiry."""
     note = re.search(r'<p class="c-proto">.*?</p>', markup, re.S)
     assert note, 'contact form note not found'
     markup = markup.replace(note.group(0), '<input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">'
@@ -65,7 +65,7 @@ def live_contact(markup, js, css):
     body = js[js.index('\n', a) + 1:js.index("},900)});", a)]
     js = js[:a] + ("    const fail=t=>{b.disabled=false;b.classList.remove('busy');const e=$('.c-form-err',cForm);e.textContent=t;e.hidden=false};\n"
                    "    $('.c-form-err',cForm).hidden=true;\n"
-                   "    fetch('/api/inquiry',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...Object.fromEntries(new FormData(cForm)),page:location.pathname})})\n"
+                   "    fetch('/next/inquiry',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...Object.fromEntries(new FormData(cForm)),page:location.pathname})})\n"
                    "      .then(r=>r.json().catch(()=>({})).then(j=>{if(!r.ok)throw new Error(j.error||'')}))\n"
                    "      .then(()=>{\n" + body + "})\n"
                    "      .catch(err=>fail(err.message||'Sorry, that did not go through. Please try again, or email us directly.'))});") + js[b:]
@@ -106,6 +106,29 @@ for f, key in PAGES.items():
         open(os.path.join(OUT, 'pages', key + '.3d.js'), 'w').write('/* eslint-disable */\n' + fix_paths(module))
     manifest[key] = {'title': title, 'three': bool(module), 'map': needs_map}
 open(os.path.join(OUT, 'manifest.json'), 'w').write(json.dumps(manifest, indent=2))
+
+# ---------- the shared shell (curtain, nav, menus, footer) for the CMS pages: insights and careers ----------
+about_html = R(os.path.join(OUT, 'pages', 'about.html'))
+top = about_html[about_html.index('<div class="wipe"'):about_html.index('<main')]
+top = re.sub(r' aria-current="page"', '', top)
+foot = about_html[about_html.index('<footer'):]
+open(os.path.join(OUT, 'shell-top.html'), 'w').write(top)
+open(os.path.join(OUT, 'shell-foot.html'), 'w').write(foot)
+aj = R(os.path.join(OUT, 'pages', 'about.js'))
+cutjs = lambda a, b: aj[aj.index(a):aj.index(b)]
+shell_js = ('/* eslint-disable */\n// Shared nav, menus, smooth scroll, curtain and footer motion for the CMS pages (cut from the design\'s about page).\n'
+            'export default function run() {\n'
+            + aj[aj.index('(function(){'):aj.index('  // ---------- vision / mission')]
+            + "  const pad=n=>String(n).padStart(2,'0');\n"
+            + "  if(reduce||!window.gsap||!window.ScrollTrigger){const w=$('#wipe');w&&w.remove();dispatchEvent(new Event('gs:intro'));return}\n"
+            + "  gsap.registerPlugin(ScrollTrigger);\n"
+            + cutjs('  // ---------- Lenis smooth scroll', '  // ---------- page intro').replace('gsap.ticker.lagSmoothing(0);', 'gsap.ticker.lagSmoothing(0);window.__lenis=lenis;', 1)
+            + "  // ---------- curtain lifts, then the page's own intro starts ----------\n  const nav=$('#nav');\n"
+            + "  gsap.to('#wipe',{yPercent:-100,duration:1,ease:'power4.inOut',delay:.15,onComplete:()=>{const w=$('#wipe');w&&w.remove()}});\n"
+            + "  gsap.delayedCall(.8,()=>{window.__introDone=true;dispatchEvent(new Event('gs:intro'))});\n\n"
+            + cutjs('  // ---------- nav: solid', '  // ---------- hero: video')
+            + aj[aj.index('  // ---------- footer curtain'):].replace("addEventListener('load',curtain);", "addEventListener('load',curtain);window.__shellRefresh=curtain;", 1))
+open(os.path.join(OUT, 'shell.js'), 'w').write(shell_js)
 
 for d in ('media', 'brand'):
     dst = os.path.join(PUB, d)

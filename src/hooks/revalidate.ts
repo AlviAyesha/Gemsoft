@@ -5,7 +5,7 @@ const refresh = async (paths: string[], tags: string[]) => {
   try {
     const { revalidatePath, revalidateTag } = await import('next/cache')
     paths.forEach((p) => revalidatePath(p))
-    tags.forEach((t) => revalidateTag(t))
+    tags.forEach((t) => revalidateTag(t, { expire: 0 }))
   } catch {
     // outside a Next.js request (seed script, CLI): nothing is cached yet
   }
@@ -18,7 +18,7 @@ export const revalidateDoc =
     const paths = [base, ...extra, '/sitemap.xml']
     if (doc?.slug) paths.push(`${base}/${doc.slug}`)
     if (previousDoc?.slug && previousDoc.slug !== doc?.slug) paths.push(`${base}/${previousDoc.slug}`)
-    await refresh(paths, [base.replace(/^\//, ''), 'sitemap'])
+    await refresh(paths, [base.split('/')[1], 'sitemap'])
     return doc
   }
 
@@ -26,6 +26,6 @@ export const revalidateDelete =
   (base: string, extra: string[] = []): CollectionAfterDeleteHook =>
   async ({ doc, req: { context } }) => {
     if (context?.disableRevalidate) return doc
-    await refresh([base, ...extra, `${base}/${doc?.slug ?? ''}`, '/sitemap.xml'], [base.replace(/^\//, ''), 'sitemap'])
+    await refresh([base, ...extra, `${base}/${doc?.slug ?? ''}`, '/sitemap.xml'], [base.split('/')[1], 'sitemap'])
     return doc
   }

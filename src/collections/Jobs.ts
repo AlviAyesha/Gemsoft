@@ -7,7 +7,9 @@ import { revalidateDelete, revalidateDoc } from '../hooks/revalidate'
 export const Jobs: CollectionConfig = {
   slug: 'jobs',
   labels: { singular: 'Job', plural: 'Jobs' },
-  admin: { useAsTitle: 'title', defaultColumns: ['title', 'department', 'location', 'open', '_status'], group: 'Careers' },
+  admin: { useAsTitle: 'title', defaultColumns: ['title', 'department', 'location', 'open', '_status'], group: 'Careers',
+    preview: (doc) => `/next/preview?collection=jobs&slug=${doc?.slug ?? ''}`,
+  },
   access: { read: publishedOrAuthenticated, create: authenticated, update: authenticated, delete: authenticated },
   fields: [
     { name: 'title', type: 'text', required: true, admin: { description: 'The job title as people search for it, for example "Senior React Developer".' } },

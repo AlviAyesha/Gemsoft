@@ -52,3 +52,7 @@ node_modules/
 # local database dumps
 *.sql
 /media-uploads
+
+# CMS uploads stored on disk in development (use cloud storage in production)
+/media
+/resumes
