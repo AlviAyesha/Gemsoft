@@ -1,0 +1,77 @@
+{
+  "home": {
+    "title": "GEMSOFT Home Design",
+    "three": true,
+    "map": false
+  },
+  "about": {
+    "title": "GEMSOFT About Design",
+    "three": false,
+    "map": true
+  },
+  "services": {
+    "title": "GEMSOFT Services Design",
+    "three": false,
+    "map": false
+  },
+  "work": {
+    "title": "GEMSOFT Work Design",
+    "three": true,
+    "map": false
+  },
+  "contact": {
+    "title": "GEMSOFT Contact Design",
+    "three": true,
+    "map": false
+  },
+  "service-ai-automation": {
+    "title": "GEMSOFT AI &amp; automation Design",
+    "three": false,
+    "map": false
+  },
+  "service-cloud-devops": {
+    "title": "GEMSOFT Cloud &amp; DevOps Design",
+    "three": false,
+    "map": false
+  },
+  "service-custom-software": {
+    "title": "GEMSOFT Custom software Design",
+    "three": false,
+    "map": false
+  },
+  "service-digital-marketing": {
+    "title": "GEMSOFT Digital marketing Design",
+    "three": false,
+    "map": false
+  },
+  "service-e-commerce": {
+    "title": "GEMSOFT E-commerce Design",
+    "three": false,
+    "map": false
+  },
+  "service-maintenance-support": {
+    "title": "GEMSOFT Maintenance &amp; support Design",
+    "three": false,
+    "map": false
+  },
+  "service-mobile-apps": {
+    "title": "GEMSOFT Mobile apps Design",
+    "three": false,
+    "map": false
+  },
+  "service-seo-growth": {
+    "title": "GEMSOFT SEO &amp; growth Design",
+    "three": false,
+    "map": false
+  },
+  "service-ui-ux-design": {
+    "title": "GEMSOFT UI/UX design Design",
+    "three": false,
+    "map": false
+  },
+  "service-web-development": {
+    "title": "GEMSOFT Web development Design",
+    "three": false,
+    "map": false
+  }
+}

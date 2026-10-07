@@ -1,0 +1,4 @@
+/* Wrapper around design markup: takes no space, so the design's own layout rules apply unchanged */
+.design-root{display:contents}
+a.chip{text-decoration:none;display:inline-flex;align-items:center}
+a.chip[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
