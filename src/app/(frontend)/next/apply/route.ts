@@ -2,7 +2,8 @@ import type { Job } from '@/payload-types'
 import { esc, isEmail, isUrl, json, mailTable, str, tooMany } from '@/lib/forms'
 import { getSettings, payload } from '@/lib/payload'
 
-const MAX = 5 * 1024 * 1024
+// hosts such as Vercel cap request bodies at 4.5 MB
+const MAX = 4 * 1024 * 1024
 const TYPES: Record<string, string> = {
   pdf: 'application/pdf',
   doc: 'application/msword',
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
   if (data.name.length < 2 || !isEmail(data.email) || !isUrl(data.linkedin) || !isUrl(data.portfolio)) return json({ error: 'Please check your details and try again.' }, 422)
   if (!(file instanceof File) || !file.size) return json({ error: 'Please attach your CV.' }, 422)
   const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
-  if (!TYPES[ext] || file.size > MAX) return json({ error: 'Your CV must be a PDF or Word file up to 5 MB.' }, 422)
+  if (!TYPES[ext] || file.size > MAX) return json({ error: 'Your CV must be a PDF or Word file up to 4 MB.' }, 422)
 
   const p = await payload()
   const job = (await p.findByID({ collection: 'jobs', id: jobId, depth: 0 }).catch(() => null)) as Job | null

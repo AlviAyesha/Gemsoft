@@ -75,6 +75,7 @@ export interface Config {
     applications: Application;
     resumes: Resume;
     inquiries: Inquiry;
+    pages: Page;
     users: User;
     redirects: Redirect;
     'payload-kv': PayloadKv;
@@ -93,6 +94,7 @@ export interface Config {
     applications: ApplicationsSelect<false> | ApplicationsSelect<true>;
     resumes: ResumesSelect<false> | ResumesSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -511,6 +513,59 @@ export interface Inquiry {
   createdAt: string;
 }
 /**
+ * Privacy policy, terms and other plain text pages. Each one is served at /its-slug.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * One or two lines under the title. Also used as the search description.
+   */
+  intro?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Part of the page address. Leave empty to build it from the title. Changing it on a live page breaks old links unless you add a redirect.
+   */
+  slug?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    /**
+     * The main phrase this page should rank for. Use it in the title, the first paragraph and one H2.
+     */
+    focusKeyword?: string | null;
+    /**
+     * Only if this content first appeared elsewhere. Full URL. Leave empty normally.
+     */
+    canonical?: string | null;
+    noindex?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -548,6 +603,10 @@ export interface Redirect {
   to?: {
     type?: ('reference' | 'custom') | null;
     reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
       | ({
           relationTo: 'posts';
           value: number | Post;
@@ -708,6 +767,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'inquiries';
         value: number | Inquiry;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'users';
@@ -1012,6 +1075,29 @@ export interface InquiriesSelect<T extends boolean = true> {
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  content?: T;
+  slug?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        focusKeyword?: T;
+        canonical?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: gemsoft
+          POSTGRES_PASSWORD: gemsoft
+          POSTGRES_DB: gemsoft
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U gemsoft" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://gemsoft:gemsoft@localhost:5432/gemsoft
+      PAYLOAD_SECRET: ci-only-secret
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      # a fresh database: migrations run first, then the build pre-renders every page
+      - run: npm run build:deploy

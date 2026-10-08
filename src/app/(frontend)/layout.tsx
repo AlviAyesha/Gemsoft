@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Consent from '@/components/Consent'
 import JsonLd from '@/components/JsonLd'
 import { getSettings } from '@/lib/payload'
 import { organization, website } from '@/lib/schema'
@@ -37,6 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         {children}
         <JsonLd data={[organization(settings), website()]} />
+        <Consent gaId={process.env.NEXT_PUBLIC_GA_ID} />
       </body>
     </html>
   )

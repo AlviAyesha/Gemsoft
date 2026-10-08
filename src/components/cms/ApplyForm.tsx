@@ -2,7 +2,8 @@
 import { useRef, useState } from 'react'
 import { Arrow } from './Btn'
 
-const MAX = 5 * 1024 * 1024
+// hosts such as Vercel cap request bodies at 4.5 MB
+const MAX = 4 * 1024 * 1024
 const OK = /\.(pdf|docx?)$/i
 
 /** Application form: details, links and a CV (drag and drop). Sends to /next/apply and shows a thank-you state. */
@@ -17,7 +18,7 @@ export default function ApplyForm({ jobId, jobTitle }: { jobId: number; jobTitle
   const pick = (f?: File | null) => {
     if (!f) return
     if (!OK.test(f.name)) return setErr((e) => ({ ...e, resume: 'Please upload a PDF or Word file.' }))
-    if (f.size > MAX) return setErr((e) => ({ ...e, resume: 'The file is larger than 5 MB.' }))
+    if (f.size > MAX) return setErr((e) => ({ ...e, resume: 'The file is larger than 4 MB.' }))
     setErr((e) => {
       const next = { ...e }
       delete next.resume
@@ -91,7 +92,7 @@ export default function ApplyForm({ jobId, jobTitle }: { jobId: number; jobTitle
         <label htmlFor="ap-cv">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
           {file ? <b>{file.name}</b> : <b>Drop your CV here or <u>browse</u></b>}
-          <span id="ap-cv-h">PDF or Word, up to 5 MB{file ? ' · click to change' : ''}</span>
+          <span id="ap-cv-h">PDF or Word, up to 4 MB{file ? ' · click to change' : ''}</span>
         </label>
         {err.resume && <em>{err.resume}</em>}
       </div>

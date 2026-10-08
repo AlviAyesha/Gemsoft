@@ -15,7 +15,7 @@ const target = (r: Redirect) => {
   if (to?.type === 'custom') return to.url || null
   const ref = to?.reference
   if (!ref || typeof ref.value !== 'object' || !ref.value?.slug) return null
-  return ref.relationTo === 'posts' ? `/insights/${ref.value.slug}` : `/careers/${ref.value.slug}`
+  return { posts: '/insights/', jobs: '/careers/', pages: '/' }[ref.relationTo] + ref.value.slug
 }
 
 /** Before a 404, sends old addresses (set in Settings > Redirects) to their new page with a 308. */

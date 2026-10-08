@@ -1,11 +1,13 @@
 import type { GlobalConfig } from 'payload'
 import { adminsOnly, anyone } from '../access'
+import { revalidateSite } from '../hooks/revalidate'
 
 /** Company details used across the site and in Organization schema, plus where form notifications go. */
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   admin: { group: 'Settings' },
   access: { read: anyone, update: adminsOnly },
+  hooks: { afterChange: [revalidateSite] },
   fields: [
     { name: 'siteName', type: 'text', required: true, defaultValue: 'GEMSOFT Technologies' },
     { name: 'tagline', type: 'text', defaultValue: 'Brilliance in every facet' },

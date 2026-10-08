@@ -25,7 +25,7 @@ let bid = 0
 const block = (blockType: string, fields: N): N => ({ type: 'block', version: 2, format: '', fields: { id: `seed${++bid}${Date.now().toString(36)}`, blockName: '', blockType, ...fields } })
 const doc = (...children: N[]) => ({ root: { type: 'root', children, direction: 'ltr' as const, format: '' as const, indent: 0, version: 1 } })
 
-const findOne = async (collection: 'categories' | 'authors' | 'posts' | 'jobs' | 'media', field: string, value: string) =>
+const findOne = async (collection: 'categories' | 'authors' | 'posts' | 'jobs' | 'media' | 'pages', field: string, value: string) =>
   (await payload.find({ collection, where: { [field]: { equals: value } }, limit: 1, depth: 0, draft: true, overrideAccess: true })).docs[0] as { id: number } | undefined
 
 // ---------- media ----------
@@ -329,6 +329,69 @@ for (const j of JOBS) {
   jobs++
 }
 console.log(`jobs created: ${jobs}`)
+
+// ---------- text pages ----------
+const PAGES = [
+  {
+    slug: 'privacy',
+    title: 'Privacy policy',
+    intro: 'What we collect when you use this website, why, and the choices you have.',
+    content: doc(
+      p('This policy explains how GEMSOFT Technologies (“we”, “us”) handles personal information collected through this website.'),
+      h('h2', 'What we collect'),
+      ul([
+        '**Contact form:** your name, email, company, the service you are interested in, your budget range and your message.',
+        '**Job applications:** your name, email, phone, links you share, your message and your CV.',
+        '**Analytics:** if you accept analytics cookies, anonymous information about the pages you visit and the device you use.',
+      ]),
+      h('h2', 'Why we use it'),
+      ul(['To reply to your enquiry and prepare proposals.', 'To assess job applications and contact candidates.', 'To understand which pages are useful and improve the website.']),
+      p('We do not sell your information, and we do not use it for advertising.'),
+      h('h2', 'How long we keep it'),
+      p('We keep enquiries for up to two years and job applications for up to one year, unless you ask us to delete them sooner.'),
+      h('h2', 'Who we share it with'),
+      p('Only with service providers that help us run the website and email, such as our hosting, database and email providers, and only as needed for those services.'),
+      h('h2', 'Your choices'),
+      p('You can ask to see, correct or delete the information we hold about you at any time by emailing hello@gemsoft.example.'),
+    ),
+  },
+  {
+    slug: 'terms',
+    title: 'Terms of use',
+    intro: 'The rules for using this website.',
+    content: doc(
+      p('By using this website you agree to these terms. If you do not agree, please do not use the site.'),
+      h('h2', 'Content'),
+      p('The text, images, logos and designs on this website belong to GEMSOFT Technologies or are used with permission. You may share links to our pages, but you may not copy the content for commercial use without our written permission.'),
+      h('h2', 'Information on this site'),
+      p('We work to keep information accurate and up to date, but it is provided for general information only. Prices, timelines and examples are indicative; the terms of any project are set out in a separate written agreement.'),
+      h('h2', 'Links to other sites'),
+      p('We are not responsible for the content of websites we link to.'),
+      h('h2', 'Changes'),
+      p('We may update these terms from time to time. The date at the top of this page shows when they last changed.'),
+      h('h2', 'Contact'),
+      p('Questions about these terms can be sent to hello@gemsoft.example.'),
+    ),
+  },
+  {
+    slug: 'cookies',
+    title: 'Cookie policy',
+    intro: 'Which cookies this website uses and how to control them.',
+    content: doc(
+      h('h2', 'Cookies we always use'),
+      p('The website itself does not need cookies to work. If you sign in to the content editor, a sign-in cookie keeps you signed in.'),
+      h('h2', 'Analytics cookies'),
+      p('If you click “Accept” on the cookie notice, we use Google Analytics to count visits and see which pages are popular. IP addresses are anonymised. If you click “Decline”, no analytics cookies are set.'),
+      h('h2', 'Changing your choice'),
+      p('Your choice is saved in your browser. To change it, clear this site’s data in your browser settings and reload the page, and the notice will appear again.'),
+    ),
+  },
+]
+for (const pg of PAGES) {
+  if (await findOne('pages', 'slug', pg.slug)) continue
+  await payload.create({ collection: 'pages', context: ctx, data: { ...pg, content: pg.content as never, _status: 'published' } })
+}
+console.log('text pages ready')
 
 // ---------- site settings ----------
 await payload.updateGlobal({

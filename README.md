@@ -17,15 +17,43 @@ npm run seed                # optional: sample insights, topics, authors and job
 
 In development, Payload updates the database tables automatically.
 
-## Deploy
+## Deploy (staging or production)
 
-1. Create a Postgres database (Neon, Supabase, Railway or your own) and set `DATABASE_URL`.
-2. Set `PAYLOAD_SECRET` (`openssl rand -hex 32`) and `NEXT_PUBLIC_SERVER_URL` (the real domain, no trailing slash).
-3. Run `npm run migrate` against the production database, then `npm run build && npm start` (or deploy to Vercel).
-4. Optional: set the `SMTP_*` values so contact messages and job applications are emailed. Without them they are still saved in the CMS (Forms > Inquiries, Careers > Applications).
-5. Uploads (`/media`, `/resumes`) are stored on disk. On Vercel or any host without a persistent disk, add a Payload storage adapter (S3, R2 or Vercel Blob).
+Every option needs a Postgres database and these settings (see `.env.example`): `DATABASE_URL`, `PAYLOAD_SECRET` (`openssl rand -hex 32`), `NEXT_PUBLIC_SERVER_URL` (the site address, no trailing slash).
+For staging also set `STAGING_PASSWORD`: the whole site then asks for a password and search engines are told not to index it.
+The deploy build (`npm run build:deploy`) runs the database migrations first, then builds.
 
-After changing collections, run `npm run migrate:create <name>` and commit the new file in `src/migrations`.
+### Option A: Vercel + Neon (simplest)
+
+1. Create a free Postgres database on [Neon](https://neon.tech) and copy its connection string.
+2. Create a bucket on Cloudflare R2 (or S3) for uploads and an access key for it. Vercel has no disk for uploads.
+3. Import the GitHub repo in Vercel. The build command comes from `vercel.json`.
+4. Add the environment variables: `DATABASE_URL`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `STAGING_PASSWORD`, the `S3_*` values, and optionally `SMTP_*` and `NEXT_PUBLIC_GA_ID`.
+5. Deploy, open `/admin`, create the first admin user, then fill in Settings > Site settings.
+6. Optional sample content: run `DATABASE_URL=... npm run seed` once from your computer.
+
+### Option B: your own server with Docker
+
+1. Install Docker on the server and copy the project there (or `git clone` it).
+2. Create `.env` from `.env.example`. Set `POSTGRES_PASSWORD`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL` and `STAGING_PASSWORD`. `DATABASE_URL` is set by docker-compose.
+3. Start the database, then build and start the site:
+   ```bash
+   docker compose up -d db
+   docker compose build web     # runs migrations and pre-renders pages against the database
+   docker compose up -d
+   ```
+4. Put a reverse proxy with HTTPS (Caddy is the simplest) in front of port 3000 and point your staging domain at the server.
+5. Open `/admin`, create the first admin user, then fill in Settings > Site settings.
+
+Uploads are kept in Docker volumes unless the `S3_*` values are set.
+
+### After changing collections
+
+Run `npm run migrate:create <name>` and commit the new file in `src/migrations`.
+
+### Checks
+
+GitHub Actions (`.github/workflows/ci.yml`) runs lint, typecheck, migrations and a full build on a fresh database for every push and pull request.
 
 ## SEO built in
 
@@ -41,4 +69,5 @@ After changing collections, run `npm run migrate:create <name>` and commit the n
 
 - Sample insights, authors and jobs from `npm run seed`.
 - Careers page copy (perks, hiring steps, FAQ) in `src/content/careers.ts`.
-- Contact details in the CMS under Settings > Site settings.
+- Contact details, phone, address and social links in the CMS under Settings > Site settings. The footer and contact page use them.
+- Privacy, terms and cookie pages under Settings > Text pages. They are general templates; have them checked before launch.

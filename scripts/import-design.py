@@ -45,7 +45,14 @@ def fix_paths(s):
     s = re.sub(r'''(location\.href\s*=\s*["'])([a-z0-9-]+)\.html(#[A-Za-z0-9_-]*)?(["'])''', route, s)
     # home sections that became their own pages
     s = s.replace('href="#insights"', 'href="/insights"').replace('href="#careers"', 'href="/careers"')
+    s = footer_links(s)
     return s
+
+def footer_links(s):
+    """Footer placeholders: legal pages get real routes; social icons are filled from Site settings at render time."""
+    for name in ('Privacy', 'Terms', 'Cookies'):
+        s = s.replace(f'<a href="#">{name}', f'<a href="/{name.lower()}">{name}')
+    return re.sub(r'<a href="#" aria-label="(LinkedIn|Instagram|Facebook|X|GitHub)"', lambda m: f'<a href="#" data-social="{m.group(1).lower()}" aria-label="{m.group(1)}"', s)
 
 os.makedirs(os.path.join(OUT, 'pages'), exist_ok=True)
 about_css = re.search(r'<style[^>]*>(.*?)</style>', R(os.path.join(SRC, 'about.html')), re.S).group(1)

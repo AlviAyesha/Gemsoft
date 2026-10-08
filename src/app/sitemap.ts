@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { SERVICES } from '@/lib/designPages'
+import { pageSlugs } from '@/lib/pages'
 import { payload } from '@/lib/payload'
 import { abs } from '@/lib/site'
 
@@ -34,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...cats.docs.map((d) => ({ url: abs(`/insights/category/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'weekly' as const, priority: 0.5 })),
       ...authors.docs.map((d) => ({ url: abs(`/insights/author/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'monthly' as const, priority: 0.3 })),
       ...jobs.docs.map((d) => ({ url: abs(`/careers/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'weekly' as const, priority: 0.6 })),
+      ...(await pageSlugs()).map((d) => ({ url: abs(`/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'yearly' as const, priority: 0.2 })),
     ]
   } catch {
     return fixed

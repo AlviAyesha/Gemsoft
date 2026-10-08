@@ -2,6 +2,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
+import { s3Storage } from '@payloadcms/storage-s3'
 import type { GenerateDescription, GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
@@ -14,6 +15,7 @@ import { Categories } from './collections/Categories'
 import { Jobs } from './collections/Jobs'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
+import { Pages } from './collections/Pages'
 import { Applications, Inquiries, Resumes } from './collections/Submissions'
 import { Users } from './collections/Users'
 import { SiteSettings } from './globals/SiteSettings'
@@ -61,18 +63,18 @@ export default buildConfig({
       ],
     },
   },
-  collections: [Posts, Categories, Authors, Media, Jobs, Applications, Resumes, Inquiries, Users],
+  collections: [Posts, Categories, Authors, Media, Jobs, Applications, Resumes, Inquiries, Pages, Users],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
-  // dev pushes schema changes automatically; production runs the files in src/migrations (npm run migrate)
+  // dev pushes schema changes automatically; deploys run the files in src/migrations first (npm run build:deploy)
   db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URL || '' }, migrationDir: path.resolve(dirname, 'migrations') }),
   email,
   sharp,
   plugins: [
     seoPlugin({
-      collections: ['posts', 'categories', 'jobs'],
+      collections: ['posts', 'categories', 'jobs', 'pages'],
       uploadsCollection: 'media',
       tabbedUI: true,
       generateTitle,
@@ -94,8 +96,22 @@ export default buildConfig({
       ],
     }),
     redirectsPlugin({
-      collections: ['posts', 'jobs'],
+      collections: ['pages', 'posts', 'jobs'],
       overrides: { admin: { group: 'Settings' } },
+    }),
+    // Uploads go to S3-compatible storage (Cloudflare R2, AWS S3, Supabase) when it is configured,
+    // otherwise to the local disk. CVs stay private: they are only served through the CMS to signed-in users.
+    s3Storage({
+      enabled: !!process.env.S3_BUCKET,
+      collections: { media: { prefix: 'media' }, resumes: { prefix: 'resumes' } },
+      bucket: process.env.S3_BUCKET || '',
+      clientUploads: true,
+      config: {
+        endpoint: process.env.S3_ENDPOINT || undefined,
+        region: process.env.S3_REGION || 'auto',
+        forcePathStyle: !!process.env.S3_ENDPOINT,
+        credentials: { accessKeyId: process.env.S3_ACCESS_KEY_ID || '', secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '' },
+      },
     }),
   ],
 })

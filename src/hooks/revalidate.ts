@@ -29,3 +29,15 @@ export const revalidateDelete =
     await refresh([base, ...extra, `${base}/${doc?.slug ?? ''}`, '/sitemap.xml'], [base.split('/')[1], 'sitemap'])
     return doc
   }
+
+/** Site-wide details (footer, contact, schema) changed: rebuild every page. */
+export const revalidateSite = async ({ doc, req: { context } }: { doc: unknown; req: { context?: Record<string, unknown> } }) => {
+  if (context?.disableRevalidate) return doc
+  try {
+    const { revalidatePath } = await import('next/cache')
+    revalidatePath('/', 'layout')
+  } catch {
+    // outside a Next.js request
+  }
+  return doc
+}

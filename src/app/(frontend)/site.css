@@ -2,3 +2,16 @@
 .design-root{display:contents}
 a.chip{text-decoration:none;display:inline-flex;align-items:center}
 a.chip[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* cookie choice */
+.gs-consent{position:fixed;left:16px;bottom:16px;z-index:80;max-width:420px;display:flex;flex-direction:column;gap:14px;padding:20px 22px;border-radius:18px;background:#0B0B0B;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.35);font:500 15px/1.5 var(--body);animation:gsUp .6s cubic-bezier(.2,.7,.2,1)}
+.gs-consent p{margin:0;color:#d6d6d6}
+.gs-consent a{color:#FF9A3D}
+.gs-consent div{display:flex;gap:8px;justify-content:flex-end}
+.gs-consent button{min-height:42px;padding:0 20px;border-radius:999px;border:0;font:700 14px var(--body);cursor:pointer}
+.gs-c-no{background:rgba(255,255,255,.1);color:#fff}
+.gs-c-yes{background:#FF7A00;color:#0B0B0B}
+.gs-c-no:hover{background:rgba(255,255,255,.2)}
+.gs-c-yes:hover{background:#fff}
+@keyframes gsUp{from{transform:translateY(30px);opacity:0}}
+@media (max-width:480px){.gs-consent{right:16px;max-width:none}}

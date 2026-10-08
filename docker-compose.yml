@@ -1,0 +1,45 @@
+# Staging or production on your own server: `docker compose up -d --build`
+# Put real values in a .env file next to this one (see .env.example). Put a reverse proxy with HTTPS
+# (Caddy, Nginx or Traefik) in front of port 3000.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gemsoft
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: gemsoft
+    ports:
+      - '127.0.0.1:5432:5432'   # only so the image build can pre-render pages; not reachable from outside
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U gemsoft']
+      interval: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      network: host
+      args:
+        DATABASE_URL: ${BUILD_DATABASE_URL:-postgres://gemsoft:${POSTGRES_PASSWORD}@127.0.0.1:5432/gemsoft}
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://gemsoft:${POSTGRES_PASSWORD}@db:5432/gemsoft
+    ports:
+      - '3000:3000'
+    volumes:
+      - uploads-media:/app/media
+      - uploads-resumes:/app/resumes
+
+volumes:
+  db:
+  uploads-media:
+  uploads-resumes:

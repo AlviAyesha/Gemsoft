@@ -406,3 +406,12 @@ main.cms .cr-hero .btn--ghost:hover .arw,main.cms .nf .btn--ghost:hover .arw{bac
   .jb-chips li{font-size:13px}
   .nf::after{font-size:52vw;bottom:2vw}
 }
+
+/* ---------- text pages (privacy, terms, cookies) ---------- */
+.lg-hero{position:relative;background:var(--ink);color:#fff;padding:clamp(140px,14vw,190px) 0 clamp(60px,7vw,100px);overflow:hidden}
+.lg-hero::after{content:'';position:absolute;right:-15%;top:-40%;width:55vw;height:55vw;border-radius:50%;background:radial-gradient(closest-side,rgba(255,122,0,.2),transparent);pointer-events:none}
+.lg-hero .wrap{position:relative;z-index:1}
+.lg-h1{max-width:16ch;font-size:clamp(40px,6vw,92px)}
+.lg-hero .ix-hero-p{margin-bottom:22px}
+.lg-date{margin:0;font-size:14px;font-weight:600;color:var(--on-dark-muted)}
+.lg-body{max-width:820px;padding-top:clamp(56px,6vw,90px);padding-bottom:clamp(80px,9vw,140px)}
