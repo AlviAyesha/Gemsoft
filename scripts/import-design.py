@@ -40,7 +40,9 @@ def route(m):
     return f'{m.group(1)}{path}{hash_}{m.group(4)}'
 
 def fix_paths(s):
-    s = re.sub(r'''(["'(=\s])(media|brand)/''', r'\1/\2/', s)
+    s = re.sub(r'''(["'(=\s]|&quot;)(media|brand)/''', r'\1/\2/', s)
+    # links inside JSON data attributes, e.g. the home "work in motion" grid
+    s = re.sub(r'''(&quot;href&quot;: &quot;|"href": ")([a-z0-9-]+)\.html(#[A-Za-z0-9_-]*)?(&quot;|")''', route, s)
     s = re.sub(r'''(href=["'])([a-z0-9-]+)\.html(#[A-Za-z0-9_-]*)?(["'])''', route, s)
     s = re.sub(r'''(location\.href\s*=\s*["'])([a-z0-9-]+)\.html(#[A-Za-z0-9_-]*)?(["'])''', route, s)
     # home sections that became their own pages

@@ -13,7 +13,7 @@ html:not(.rm) .nav:not(.solid) .nav-links a[aria-current="page"]{color:var(--red
 .crumb{display:flex;gap:10px;align-items:center;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--on-dark-muted);margin:0 0 22px;list-style:none;padding:0}
 .crumb a{text-decoration:none;color:#fff}
 .crumb li+li::before{content:"";display:inline-block;width:6px;height:6px;margin-right:10px;transform:rotate(45deg);background:var(--red);vertical-align:middle}
-.a-h1{font-family:var(--display);font-weight:800;font-size:clamp(38px,6.4vw,96px);line-height:.98;letter-spacing:-.035em;margin:0}
+.a-h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,4.8vw,72px);line-height:.98;letter-spacing:-.035em;margin:0}
 .a-h1 em{font-style:normal;color:var(--red-light)}
 .a-hero-b{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-top:clamp(28px,4vw,48px)}
 .a-hero-b p{margin:0;max-width:46ch;color:#E2E2E2;font-size:clamp(16px,1.3vw,19px)}
