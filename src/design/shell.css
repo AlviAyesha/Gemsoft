@@ -112,7 +112,7 @@ html:not(.rm) .nav:not(.solid) .nav-links>li>a:hover,html:not(.rm) .nav:not(.sol
 .hero-left{position:absolute;inset:0 auto 0 0;width:62%;background:linear-gradient(to right,rgba(7,14,26,.72) 20%,rgba(7,14,26,0))}
 .hero-copy{position:absolute;inset:0;max-width:var(--max);margin:0 auto;padding:clamp(110px,15vh,150px) var(--gutter) 0;display:flex;flex-direction:column;gap:22px;pointer-events:none}
 .hero-copy>*{pointer-events:auto}
-.h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7.2vw,112px);line-height:.95;letter-spacing:-.04em;margin:0}
+.h1{font-family:var(--display);font-weight:800;font-size:clamp(36px,5.6vw,88px);line-height:.95;letter-spacing:-.04em;margin:0}
 .h1 .r{color:var(--red-lg)}
 .hero-sub{max-width:44ch;color:rgba(255,255,255,.88);font-size:clamp(16px,1.3vw,19px);margin:0}
 .hero-btns{display:flex;gap:12px;flex-wrap:wrap}
