@@ -56,7 +56,7 @@ export default function run() {
   // ---------- page intro: dark curtain lifts, H1 lines rise ----------
   const nav=$('#nav');
   gsap.timeline()
-    .to('#wipe',{yPercent:-100,duration:1,ease:'power4.inOut',delay:.15})
+    .to('#wipe',{yPercent:-100,duration:window.__vt?0:1,ease:'power4.inOut',delay:window.__vt?0:.15})
     .from('#a-h1 .ln>span',{yPercent:110,duration:1.2,stagger:.1,ease:'power4.out'},'-=.45')
     .from('.crumb,#aHeroB',{y:24,opacity:0,duration:.8,stagger:.1,ease:'power3.out'},'-=.9')
     .add(()=>$('#wipe').remove());

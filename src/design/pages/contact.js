@@ -98,7 +98,7 @@ export default function run() {
   const h1c=letters($('.c-h1'));
   gsap.set(h1c,{autoAlpha:0,filter:'blur(12px)'});gsap.set('.c-hero-p,.c-scroll',{autoAlpha:0,y:16});
   const heroIn=()=>{
-    gsap.timeline().to('#wipe',{yPercent:-100,duration:1,ease:'power4.inOut',delay:.15}).add(()=>{$('#wipe')&&$('#wipe').remove();dispatchEvent(new Event('cp-intro'))})
+    gsap.timeline().to('#wipe',{yPercent:-100,duration:window.__vt?0:1,ease:'power4.inOut',delay:window.__vt?0:.15}).add(()=>{$('#wipe')&&$('#wipe').remove();dispatchEvent(new Event('cp-intro'))})
       .to(h1c,{...blurIn,duration:.7,stagger:.06},'-=.15')
       .to('.c-hero-p',{autoAlpha:1,y:0,duration:.8,ease:'power3.out'},'-=.3')
       .to('.c-scroll',{autoAlpha:.5,y:0,duration:.6,ease:'power3.out'},'-=.4');

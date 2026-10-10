@@ -110,6 +110,11 @@ for f, key in PAGES.items():
         css = css.replace('html.cp', 'html:has(#cHero)')   # the design marks the contact page with a class on <html>; here the page itself is the marker
     open(os.path.join(OUT, 'pages', key + '.html'), 'w').write(fix_paths(markup))
     open(os.path.join(OUT, 'pages', key + '.css'), 'w').write(fix_paths(css))
+    if key == 'home':   # the preloader only plays when the site is first opened, not when coming from another page
+        js = (js.replace("intro.to(po,{p:1,duration:1.9,", "intro.to(po,{p:1,duration:window.__vt?0:1.9,")
+                .replace("{opacity:1,x:0},{x:560,duration:.8,", "{opacity:1,x:0},{x:560,duration:window.__vt?0:.8,")
+                .replace(".to(pre,{yPercent:-100,duration:.9,ease:'power4.inOut'},'+=.05')", ".to(pre,{yPercent:-100,duration:window.__vt?0:.9,ease:'power4.inOut'},window.__vt?'+=0':'+=.05')"))
+    js = js.replace("to('#wipe',{yPercent:-100,duration:1,ease:\'power4.inOut\',delay:.15", "to('#wipe',{yPercent:-100,duration:window.__vt?0:1,ease:\'power4.inOut\',delay:window.__vt?0:.15")   # no curtain when arriving from another page of the site (see layout BOOT)
     open(os.path.join(OUT, 'pages', key + '.js'), 'w').write(fix_paths(js))
     if module:
         open(os.path.join(OUT, 'pages', key + '.3d.js'), 'w').write('/* eslint-disable */\n' + fix_paths(module))
@@ -133,8 +138,8 @@ shell_js = ('/* eslint-disable */\n// Shared nav, menus, smooth scroll, curtain 
             + "  gsap.registerPlugin(ScrollTrigger);\n"
             + cutjs('  // ---------- Lenis smooth scroll', '  // ---------- page intro').replace('gsap.ticker.lagSmoothing(0);', 'gsap.ticker.lagSmoothing(0);window.__lenis=lenis;', 1)
             + "  // ---------- curtain lifts, then the page's own intro starts ----------\n  const nav=$('#nav');\n"
-            + "  gsap.to('#wipe',{yPercent:-100,duration:1,ease:'power4.inOut',delay:.15,onComplete:()=>{const w=$('#wipe');w&&w.remove()}});\n"
-            + "  gsap.delayedCall(.8,()=>{window.__introDone=true;dispatchEvent(new Event('gs:intro'))});\n\n"
+            + "  gsap.to('#wipe',{yPercent:-100,duration:window.__vt?0:1,ease:'power4.inOut',delay:window.__vt?0:.15,onComplete:()=>{const w=$('#wipe');w&&w.remove()}});\n"
+            + "  gsap.delayedCall(window.__vt?.05:.8,()=>{window.__introDone=true;dispatchEvent(new Event('gs:intro'))});\n\n"
             + cutjs('  // ---------- nav: solid', '  // ---------- hero: video')
             + aj[aj.index('  // ---------- footer curtain'):].replace("addEventListener('load',curtain);", "addEventListener('load',curtain);window.__shellRefresh=curtain;", 1))
 open(os.path.join(OUT, 'shell.js'), 'w').write(shell_js)

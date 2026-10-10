@@ -42,9 +42,9 @@ export default function run() {
   if(lenis)lenis.stop();
   const po={p:0};
   const intro=gsap.timeline();
-  intro.to(po,{p:1,duration:1.9,ease:'power1.inOut',onUpdate:()=>{drawGem(po.p);$('#preCount').textContent=Math.round(po.p*100)+'%';$('#preBar').style.transform=`scaleX(${po.p})`}})
-    .fromTo('#gemShineBar',{opacity:1,x:0},{x:560,duration:.8,ease:'power2.inOut'})
-    .to(pre,{yPercent:-100,duration:.9,ease:'power4.inOut'},'+=.05')
+  intro.to(po,{p:1,duration:window.__vt?0:1.9,ease:'power1.inOut',onUpdate:()=>{drawGem(po.p);$('#preCount').textContent=Math.round(po.p*100)+'%';$('#preBar').style.transform=`scaleX(${po.p})`}})
+    .fromTo('#gemShineBar',{opacity:1,x:0},{x:560,duration:window.__vt?0:.8,ease:'power2.inOut'})
+    .to(pre,{yPercent:-100,duration:window.__vt?0:.9,ease:'power4.inOut'},window.__vt?'+=0':'+=.05')
     .from('#h1 .ln>span',{yPercent:110,duration:1.2,stagger:.1,ease:'power4.out'},'-=.35')
     .from('#heroCopy [data-fade]',{y:24,opacity:0,duration:.8,stagger:.1,ease:'power3.out'},'-=.8')
     .add(()=>nav.classList.remove('hide'),'<')

@@ -21,8 +21,29 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#0B0B0B' }
 
-// sets the "js" and reduced-motion classes before the first paint, as the design expects
-const BOOT = "document.documentElement.classList.add('js');if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rm');"
+// sets the "js" and reduced-motion classes before the first paint, as the design expects.
+// "vt": the visitor came from another page of the site, so the loading curtain is skipped and the page fades in.
+const BOOT =
+  "var h=document.documentElement;h.classList.add('js');if(matchMedia('(prefers-reduced-motion: reduce)').matches)h.classList.add('rm');" +
+  "try{var r=document.referrer,n=performance.getEntriesByType('navigation')[0];if(document.prerendering||(r&&new URL(r).origin===location.origin&&(!n||n.type!=='reload'))){h.classList.add('vt');window.__vt=true}}catch(e){}"
+
+// Chrome and Edge prepare a page in the background when a link to it is hovered, so opening it is instant
+const SPECULATION = JSON.stringify({
+  prerender: [
+    {
+      where: {
+        and: [
+          { href_matches: '/*' },
+          { not: { href_matches: '/admin*' } },
+          { not: { href_matches: '/next/*' } },
+          { not: { href_matches: '/*.*' } },
+          { not: { selector_matches: '[target=_blank],[download]' } },
+        ],
+      },
+      eagerness: 'moderate',
+    },
+  ],
+})
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings().catch(() => null)
@@ -30,6 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
+        <script type="speculationrules" dangerouslySetInnerHTML={{ __html: SPECULATION }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}

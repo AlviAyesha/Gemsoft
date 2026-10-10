@@ -26,8 +26,8 @@ export default function run() {
 
   // ---------- curtain lifts, then the page's own intro starts ----------
   const nav=$('#nav');
-  gsap.to('#wipe',{yPercent:-100,duration:1,ease:'power4.inOut',delay:.15,onComplete:()=>{const w=$('#wipe');w&&w.remove()}});
-  gsap.delayedCall(.8,()=>{window.__introDone=true;dispatchEvent(new Event('gs:intro'))});
+  gsap.to('#wipe',{yPercent:-100,duration:window.__vt?0:1,ease:'power4.inOut',delay:window.__vt?0:.15,onComplete:()=>{const w=$('#wipe');w&&w.remove()}});
+  gsap.delayedCall(window.__vt?.05:.8,()=>{window.__introDone=true;dispatchEvent(new Event('gs:intro'))});
 
   // ---------- nav: solid after hero, hide on scroll down ----------
   ScrollTrigger.create({start:0,end:'max',onUpdate:s=>{const y=s.scroll();nav.classList.toggle('solid',y>40);nav.classList.toggle('hide',s.direction===1&&y>160&&!menu.classList.contains('open'))}});

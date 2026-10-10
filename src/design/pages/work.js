@@ -48,7 +48,7 @@ export default function run() {
 
   const heroIn=()=>{
     const tl=gsap.timeline();
-    tl.to('#wipe',{yPercent:-100,duration:1,ease:'power4.inOut',delay:.15}).add(()=>$('#wipe')&&$('#wipe').remove())
+    tl.to('#wipe',{yPercent:-100,duration:window.__vt?0:1,ease:'power4.inOut',delay:window.__vt?0:.15}).add(()=>$('#wipe')&&$('#wipe').remove())
       .to(heroRows.flat().concat(rc),{autoAlpha:1,filter:'blur(0px)',duration:.7,ease:'power2.out',stagger:.04},'-=.1')
       .to('.w-hero-up',{autoAlpha:1,y:0,duration:.9,stagger:.1,ease:'power3.out'},'-=.5')
       .add(()=>gsap.delayedCall(1.6,cycle));

@@ -15,3 +15,18 @@ a.chip[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--
 .gs-c-yes:hover{background:#fff}
 @keyframes gsUp{from{transform:translateY(30px);opacity:0}}
 @media (max-width:480px){.gs-consent{right:16px;max-width:none}}
+
+/* Services mega menu: a full-width panel under the nav */
+.nav .nav-links>li.has-mega{position:static}
+.nav .mega{top:100%;left:0;right:0;width:auto;transform:translateY(-8px);border-radius:0;box-shadow:0 40px 60px -30px rgba(11,11,11,.35),0 1px 0 var(--line) inset;padding:18px max(var(--gutter),calc((100vw - var(--max))/2 + var(--gutter))) 26px;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.nav .mega::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:28px}
+.nav .has-mega:hover .mega,.nav .has-mega:focus-within .mega,.nav .mega.open{transform:translateY(0)}
+.nav .mega a{padding:14px;color:var(--ink)}
+@media (max-width:1180px){.nav .mega{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Moving between pages: the next page is prepared in the background and fades in without the loading curtain */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
+.nav{view-transition-name:site-nav}
+html.vt .wipe{display:none!important}
+html.vt #pre{display:none!important}
