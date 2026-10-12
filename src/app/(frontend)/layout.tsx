@@ -5,6 +5,7 @@ import JsonLd from '@/components/JsonLd'
 import { getSettings } from '@/lib/payload'
 import { organization, website } from '@/lib/schema'
 import { SITE_NAME, SITE_URL } from '@/lib/site'
+import './fonts.css'
 import '@/design/shell.css'
 import './site.css'
 
@@ -53,10 +54,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
         <script type="speculationrules" dangerouslySetInnerHTML={{ __html: SPECULATION }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" />
+        <link rel="preload" href="/fonts/unbounded-latin.woff2" as="font" type="font/woff2" crossOrigin="" />
+        <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossOrigin="" />
       </head>
       <body>
         {children}
