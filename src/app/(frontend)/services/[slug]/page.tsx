@@ -3,7 +3,7 @@ import DesignPage from '@/components/DesignPage'
 import JsonLd from '@/components/JsonLd'
 import { SERVICES } from '@/lib/designPages'
 import { breadcrumbs, ORG_ID } from '@/lib/schema'
-import { pageMeta } from '@/lib/seo'
+import { designMeta } from '@/lib/designSeo'
 import { abs } from '@/lib/site'
 import '@/design/pages/services.css'   // every service page shares the services styles
 
@@ -15,7 +15,8 @@ export const generateStaticParams = () => Object.keys(SERVICES).map((slug) => ({
 export async function generateMetadata({ params }: Props) {
   const s = SERVICES[(await params).slug]
   if (!s) return {}
-  return pageMeta({ title: `${s.title} | GEMSOFT Technologies`, description: s.description, path: `/services/${(await params).slug}` })
+  const slug = (await params).slug
+  return designMeta(`service-${slug}`, { title: `${s.title} | GEMSOFT Technologies`, description: s.description, path: `/services/${slug}` })
 }
 
 export default async function Page({ params }: Props) {

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { LEGAL, LEGAL_UPDATED } from '@/content/legal'
 import { SERVICES } from '@/lib/designPages'
 import { pageSlugs } from '@/lib/pages'
 import { payload } from '@/lib/payload'
@@ -7,6 +8,13 @@ import { abs } from '@/lib/site'
 export const revalidate = 3600
 
 /** Every public page: the designed pages, services, insights (with topics and authors) and open roles. */
+// CMS text pages, plus the built-in privacy, terms and cookies pages the CMS does not have yet
+async function textPages(): Promise<MetadataRoute.Sitemap> {
+  const cms = await pageSlugs()
+  const legal = Object.keys(LEGAL).filter((slug) => !cms.some((d) => d.slug === slug)).map((slug) => ({ slug, updatedAt: LEGAL_UPDATED }))
+  return [...cms, ...legal].map((d) => ({ url: abs(`/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'yearly' as const, priority: 0.2 }))
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
   const fixed: MetadataRoute.Sitemap = [
@@ -35,9 +43,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...cats.docs.map((d) => ({ url: abs(`/insights/category/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'weekly' as const, priority: 0.5 })),
       ...authors.docs.map((d) => ({ url: abs(`/insights/author/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'monthly' as const, priority: 0.3 })),
       ...jobs.docs.map((d) => ({ url: abs(`/careers/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'weekly' as const, priority: 0.6 })),
-      ...(await pageSlugs()).map((d) => ({ url: abs(`/${d.slug}`), lastModified: new Date(d.updatedAt), changeFrequency: 'yearly' as const, priority: 0.2 })),
+      ...(await textPages()),
     ]
   } catch {
-    return fixed
+    return [...fixed, ...Object.keys(LEGAL).map((slug) => ({ url: abs(`/${slug}`), lastModified: new Date(LEGAL_UPDATED), changeFrequency: 'yearly' as const, priority: 0.2 }))]
   }
 }

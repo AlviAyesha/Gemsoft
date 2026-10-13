@@ -60,7 +60,7 @@ export default function run() {
     const paint=im=>{const cw=cv.width,ch=cv.height,k=Math.max(cw/im.naturalWidth,ch/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;cx.drawImage(im,(cw-w)/2,(ch-h)/2,w,h)};
     const render=()=>{const i=Math.floor(pos),f=pos-i,a=ok(fr[i])?fr[i]:near(i);if(!a)return;cx.globalAlpha=1;paint(a);if(f>.01&&ok(fr[i+1])&&a===fr[i]){cx.globalAlpha=f;paint(fr[i+1]);cx.globalAlpha=1}last=pos};
     const fit=()=>{const r=cv.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);render()};
-    const load=()=>{if(started)return;started=true;urls.forEach((u,i)=>{const im=new Image();im.decoding='async';im.onload=i===0?()=>{fit();onFirst&&onFirst()}:()=>{if(Math.abs(i-pos)<2)render()};im.src=u;fr.push(im)})};
+    const load=()=>{if(started)return;started=true;fr.length=urls.length;const get=i=>{if(fr[i])return;const im=new Image();im.decoding='async';im.onload=i===0?()=>{fit();onFirst&&onFirst()}:()=>{if(Math.abs(i-pos)<2)render()};im.src=urls[i];fr[i]=im};get(0);const rest=()=>{for(const s of [8,4,2,1])for(let i=0;i<urls.length;i+=s)get(i)};document.readyState==='complete'?rest():addEventListener('load',rest,{once:true})};
     gsap.ticker.add(()=>{const d=target-pos;if(Math.abs(d)<.001){if(last!==target&&started){pos=target;render()}return}pos+=d*.16;render()});
     addEventListener('resize',()=>started&&fit());
     return {load,set:p=>{target=Math.max(0,Math.min(1,p))*(urls.length-1)}}}

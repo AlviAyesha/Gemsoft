@@ -19,6 +19,7 @@ import { Pages } from './collections/Pages'
 import { Applications, Inquiries, Resumes } from './collections/Submissions'
 import { Users } from './collections/Users'
 import { SiteSettings } from './globals/SiteSettings'
+import { Seo } from './globals/Seo'
 import { SITE_URL } from './lib/site'
 
 const filename = fileURLToPath(import.meta.url)
@@ -64,7 +65,7 @@ export default buildConfig({
     },
   },
   collections: [Posts, Categories, Authors, Media, Jobs, Applications, Resumes, Inquiries, Pages, Users],
-  globals: [SiteSettings],
+  globals: [SiteSettings, Seo],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },

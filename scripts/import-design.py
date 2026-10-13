@@ -81,6 +81,21 @@ def live_contact(markup, js, css):
     css += '\n.hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}\n.c-form-err{color:#ff8a7d}\n'
     return markup, js, css
 
+# ---------- page weight: same look, less loaded up front ----------
+SEQ_LOAD = "const load=()=>{if(started)return;started=true;urls.forEach((u,i)=>{const im=new Image();im.decoding='async';im.onload=i===0?()=>{fit();onFirst&&onFirst()}:()=>{if(Math.abs(i-pos)<2)render()};im.src=u;fr.push(im)})};"
+# first frame at once; the rest after the page has loaded, every 8th frame first, then the gaps, so scrubbing works early
+SEQ_STAGED = ("const load=()=>{if(started)return;started=true;fr.length=urls.length;"
+              "const get=i=>{if(fr[i])return;const im=new Image();im.decoding='async';im.onload=i===0?()=>{fit();onFirst&&onFirst()}:()=>{if(Math.abs(i-pos)<2)render()};im.src=urls[i];fr[i]=im};"
+              "get(0);const rest=()=>{for(const s of [8,4,2,1])for(let i=0;i<urls.length;i+=s)get(i)};"
+              "document.readyState==='complete'?rest():addEventListener('load',rest,{once:true})};")
+
+def lighter(key, markup, js):
+    markup = markup.replace('<img id="giant" src=', '<img id="giant" loading="lazy" src=')   # footer wordmark: fetched when the footer gets close
+    if key == 'home':
+        assert SEQ_LOAD in js, 'home frame loader not found'
+        js = js.replace(SEQ_LOAD, SEQ_STAGED)
+    return markup, js
+
 manifest = {}
 for f, key in PAGES.items():
     s = R(os.path.join(SRC, f))
@@ -108,6 +123,7 @@ for f, key in PAGES.items():
     if key == 'contact':
         markup, js, css = live_contact(markup, js, css)
         css = css.replace('html.cp', 'html:has(#cHero)')   # the design marks the contact page with a class on <html>; here the page itself is the marker
+    markup, js = lighter(key, markup, js)
     open(os.path.join(OUT, 'pages', key + '.html'), 'w').write(fix_paths(markup))
     open(os.path.join(OUT, 'pages', key + '.css'), 'w').write(fix_paths(css))
     if key == 'home':   # the preloader only plays when the site is first opened, not when coming from another page

@@ -3,7 +3,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import RichText from '@/components/cms/RichText'
 import JsonLd from '@/components/JsonLd'
+import { EMAIL, LEGAL, LEGAL_UPDATED } from '@/content/legal'
 import { getPage, pageSlugs } from '@/lib/pages'
+import { getSettings } from '@/lib/payload'
 import { fmtDate } from '@/lib/posts'
 import { redirectIfMoved } from '@/lib/redirects'
 import { breadcrumbs } from '@/lib/schema'
@@ -14,21 +16,33 @@ export const revalidate = 3600
 type P = { params: Promise<{ page: string }> }
 
 export async function generateStaticParams() {
-  return (await pageSlugs()).filter((p) => p.slug).map((p) => ({ page: p.slug! }))
+  const slugs = new Set([...Object.keys(LEGAL), ...(await pageSlugs()).map((p) => p.slug).filter((s): s is string => !!s)])
+  return [...slugs].map((page) => ({ page }))
+}
+
+/** The CMS page, or for privacy, terms and cookies the built-in text when the CMS has none. */
+async function loadPage(slug: string) {
+  const page = await getPage(slug).catch(() => null)
+  if (page) return { title: page.title, intro: page.intro, content: page.content, updatedAt: page.updatedAt, meta: page.meta ?? {} }
+  const legal = Object.hasOwn(LEGAL, slug) ? LEGAL[slug] : null
+  if (!legal) return null
+  const email = (await getSettings().catch(() => null))?.contact?.email
+  const content = email ? JSON.parse(JSON.stringify(legal.content).replaceAll(EMAIL, email)) : legal.content
+  return { title: legal.title, intro: legal.intro, content, updatedAt: LEGAL_UPDATED, meta: {} as { title?: string | null; description?: string | null; noindex?: boolean | null } }
 }
 
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const slug = (await params).page
-  const page = await getPage(slug)
+  const page = await loadPage(slug)
   if (!page) return {}
-  const m = page.meta ?? {}
+  const m = page.meta
   return pageMeta({ title: m.title || `${page.title} | GEMSOFT Technologies`, description: m.description || page.intro || page.title, path: `/${slug}`, noindex: !!m.noindex })
 }
 
 /** Privacy, Terms, Cookies and any other text page made in the CMS. */
 export default async function TextPage({ params }: P) {
   const slug = (await params).page
-  const page = await getPage(slug)
+  const page = await loadPage(slug)
   if (!page) {
     await redirectIfMoved(`/${slug}`)
     notFound()
