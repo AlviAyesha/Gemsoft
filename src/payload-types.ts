@@ -109,9 +109,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'site-settings': SiteSetting;
+    seo: Seo;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    seo: SeoSelect<false> | SeoSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1249,6 +1251,70 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Insights, careers, categories and text pages have their own SEO tab when you edit them. This screen covers the designed pages and tags for every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo".
+ */
+export interface Seo {
+  id: number;
+  /**
+   * Add a row only for pages whose search text you want to change. Empty fields keep the built-in text.
+   */
+  pages?:
+    | {
+        page:
+          | 'home'
+          | 'about'
+          | 'services'
+          | 'work'
+          | 'contact'
+          | 'service-web-development'
+          | 'service-mobile-apps'
+          | 'service-ui-ux-design'
+          | 'service-custom-software'
+          | 'service-e-commerce'
+          | 'service-ai-automation'
+          | 'service-seo-growth'
+          | 'service-cloud-devops'
+          | 'service-digital-marketing'
+          | 'service-maintenance-support';
+        /**
+         * Shown in Google and the browser tab. Aim for 50 to 60 characters.
+         */
+        title?: string | null;
+        /**
+         * Shown under the title in Google. Aim for 120 to 160 characters.
+         */
+        description?: string | null;
+        /**
+         * Picture shown when the page is shared (1200 x 630). Without one, a branded image is made from the title.
+         */
+        image?: (number | null) | Media;
+        noindex?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Only the code from content="...", not the whole tag.
+   */
+  google?: string | null;
+  bing?: string | null;
+  facebook?: string | null;
+  /**
+   * Any other meta tag, for example name "p:domain_verify" or "yandex-verification", with its content.
+   */
+  metaTags?:
+    | {
+        name: string;
+        content: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1283,6 +1349,35 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | {
         inquiries?: T;
         applications?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo_select".
+ */
+export interface SeoSelect<T extends boolean = true> {
+  pages?:
+    | T
+    | {
+        page?: T;
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+        id?: T;
+      };
+  google?: T;
+  bing?: T;
+  facebook?: T;
+  metaTags?:
+    | T
+    | {
+        name?: T;
+        content?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

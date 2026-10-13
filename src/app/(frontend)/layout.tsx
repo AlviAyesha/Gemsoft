@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import Consent from '@/components/Consent'
 import MegaMenu from '@/components/MegaMenu'
 import JsonLd from '@/components/JsonLd'
+import { headTags } from '@/lib/designSeo'
 import { getSettings } from '@/lib/payload'
 import { organization, website } from '@/lib/schema'
 import { SITE_NAME, SITE_URL } from '@/lib/site'
@@ -9,7 +10,7 @@ import './fonts.css'
 import '@/design/shell.css'
 import './site.css'
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${SITE_NAME} | Websites, Apps and Custom Software`, template: '%s' },
   description: 'GEMSOFT Technologies builds fast websites, mobile apps, custom software and AI automation for growing businesses.',
@@ -20,6 +21,9 @@ export const metadata: Metadata = {
   alternates: { types: { 'application/rss+xml': [{ url: '/insights/rss.xml', title: 'GEMSOFT Insights' }] } },
   formatDetection: { telephone: false },
 }
+
+// verification codes and extra meta tags from Settings > SEO are added to every page
+export const generateMetadata = async (): Promise<Metadata> => ({ ...baseMetadata, ...(await headTags()) })
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#0B0B0B' }
 
